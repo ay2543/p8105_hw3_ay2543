@@ -101,7 +101,22 @@ accel %>%
 The tidied dataset has **`r nrow(accel)` observations and `r ncol(accel)` variables**. 
 Key variables are *week, day_id, day, minute_since_midnight to indicate the time of day, activity, and a day_type variable to distinguish weekdays from weekends*.
 
+### Trends of total activity for each day
+* Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
 
+```{r}
+
+totals = accel %>% 
+  group_by(week, day) %>% 
+  summarise(total_activity = sum(activity)) %>% 
+  pivot_wider(names_from = week,
+              values_from = total_activity)
+
+totals %>% 
+  knitr::kable()
+```
+The mean daily activity across the 5 weeks increases from Monday to Friday, and then drops during the weekend.
+The overall mean daily activity was `r mean(totals$daily_total)`.
 
 
 
