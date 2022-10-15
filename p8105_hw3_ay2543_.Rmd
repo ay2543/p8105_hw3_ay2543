@@ -1,0 +1,12 @@
+---
+title: "p8105_hw3"
+output: github_document
+---
+
+Before we start anything, load the required libraries:
+```{r, message = FALSE}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(p8105.datasets)
+```
