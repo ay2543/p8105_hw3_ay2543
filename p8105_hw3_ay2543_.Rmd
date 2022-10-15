@@ -13,7 +13,7 @@ library(p8105.datasets)
 
 ## Problem 1
 
-#### Read in the data
+### Read in the data
 
 ```{r}
 data("instacart")
@@ -23,7 +23,7 @@ instacart =
   as_tibble(instacart)
 ```
 
-#### Answer questions about the data
+### Answer questions about the data
 
 This dataset contains `r nrow(instacart)` rows and `r ncol(instacart)` columns, with each row resprenting a single product from an instacart order. Variables include identifiers for user, order, and product; the order in which each product was added to the cart. There are several order-level variables, describing the day and time of the order, and number of days since prior order. Then there are several item-specific variables, describing the product name (e.g. Yogurt, Avocado), department (e.g. dairy and eggs, produce), and aisle (e.g. yogurt, fresh fruits), and whether the item has been ordered by this user in the past. In total, there are `r instacart %>% select(product_id) %>% distinct %>% count` products found in `r instacart %>% select(user_id, order_id) %>% distinct %>% count` orders from `r instacart %>% select(user_id) %>% distinct %>% count` distinct users.
 
@@ -72,3 +72,39 @@ instacart %>%
   spread(key = order_dow, value = mean_hour) %>%
   knitr::kable(digits = 2)
 ```
+
+
+## Problem 2
+
+### Loading, tidying and wrangling data
+
+```{r}
+accel = read_csv("accel_data.csv")
+
+accel = accel %>% 
+  janitor::clean_names() %>% 
+  mutate(day_type = ifelse((day == "Saturday" | day == "Sunday"), "weekend", "weekday"),
+         day = factor(day, 
+                      levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+                      ordered = TRUE)) %>% 
+  pivot_longer(activity_1:activity_1440,
+               names_to = "minute_since_midnight",
+               names_prefix = "activity_",
+               values_to = "activity")
+
+accel %>% 
+  head() %>% 
+  knitr::kable()
+
+```
+
+The tidied dataset has **`r nrow(accel)` observations and `r ncol(accel)` variables**. 
+Key variables are *week, day_id, day, minute_since_midnight to indicate the time of day, activity, and a day_type variable to distinguish weekdays from weekends*.
+
+
+
+
+
+
+
+
