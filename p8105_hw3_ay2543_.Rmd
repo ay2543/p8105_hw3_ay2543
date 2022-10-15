@@ -83,14 +83,16 @@ accel = read_csv("accel_data.csv")
 
 accel = accel %>% 
   janitor::clean_names() %>% 
+    pivot_longer(activity_1:activity_1440,
+               names_to = "minute_since_midnight",
+               names_prefix = "activity_",
+               values_to = "activity") %>% 
   mutate(day_type = ifelse((day == "Saturday" | day == "Sunday"), "weekend", "weekday"),
          day = factor(day, 
                       levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
-                      ordered = TRUE)) %>% 
-  pivot_longer(activity_1:activity_1440,
-               names_to = "minute_since_midnight",
-               names_prefix = "activity_",
-               values_to = "activity")
+                      ordered = TRUE),
+         minute_since_midnight = as.numeric(minute_since_midnight))
+
 
 accel %>% 
   head() %>% 
@@ -102,14 +104,13 @@ The tidied dataset has **`r nrow(accel)` observations and `r ncol(accel)` variab
 Key variables are *week, day_id, day, minute_since_midnight to indicate the time of day, activity, and a day_type variable to distinguish weekdays from weekends*.
 
 ### Trends of total activity for each day
-* Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
-
+I created a total activity variable for each day and created a table showing these totals:
 ```{r}
 
 totals = accel %>% 
   group_by(week, day) %>% 
   summarise(total_activity = sum(activity)) %>% 
-  pivot_wider(names_from = week,
+  pivot_wider(names_from = day,
               values_from = total_activity)
 
 totals %>% 
@@ -118,6 +119,28 @@ totals %>%
 The mean daily activity across the 5 weeks increases from Monday to Friday, and then drops during the weekend.
 The overall mean daily activity was `r mean(totals$daily_total)`.
 
+
+### Visualization of 24-hour activity time courses 
+* Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+Now let's check for trends in the daily total.
+
+```{r}
+accel %>% ggplot(aes(x = minute_since_midnight/60, y = activity)) +
+  geom_line(aes(color = day), alpha = 0.5) +
+  labs(
+    x = "Hour",
+    y = "Activity level"
+  ) +
+  theme_classic() 
+```
+
+Observations:
+
+* Low activity level from hour 0 to hour 5
+* Activity level is higher from hour 5 to hour 19
+* Activity level peaks from around hour 20 to 22 from Monday to Saturday
+* Sunday peak activity levels are from around hour 10 to hour 12
+* Activity levels drop from hour 22 to 24
 
 
 
