@@ -191,3 +191,31 @@ ny_noaa %>%
 The most commonly observed values for snowfall are 0 mm , followed by missing (NA) values. Then the most common non-zero and non-missing snowfall values are 25 mm, 13 mm and 51 mm.
 
 
+### Visualization of average max temperature
+
+Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
+```{r}
+ny_noaa %>% 
+  filter(month == "January" | month == "July") %>% 
+  group_by(year, month, id) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = mean_tmax)) +
+  geom_point(alpha = 0.2) +
+  facet_grid(.~month) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    x = "Year",
+    y = "Average maximum temperature in each station across years (C)"
+  )
+```
+
+The average maximum temperature in January is lower than the average maximum temperature in July in each station across the years.
+Outliers exist at both extremes for most years, with the furthest outlier being the low maximum temperature in July 1988.
+
+
+
+
+
+
