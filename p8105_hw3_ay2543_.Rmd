@@ -144,5 +144,50 @@ Observations:
 
 
 
+## Problem 3
+
+### Load data
+```{r}
+data("ny_noaa")
+```
+
+#### Description of dataset
+
+The ny_noaa dataset has **`r nrow(ny_noaa)` observations and `r ncol(ny_noaa)` observations**. The variables are *`r colnames(ny_noaa)`*. 
+
+Here are the counts and proportions of missing data:
+
+* prcp: `r sum(is.na(ny_noaa$prcp))` (`r sum(is.na(ny_noaa$prcp))/nrow(ny_noaa)`)
+* snow: `r sum(is.na(ny_noaa$snow))` (`r sum(is.na(ny_noaa$snow))/nrow(ny_noaa)`)
+* snwd: `r sum(is.na(ny_noaa$snwd))` (`r sum(is.na(ny_noaa$snwd))/nrow(ny_noaa)`)
+* tmax: `r sum(is.na(ny_noaa$tmax))` (`r sum(is.na(ny_noaa$tmax))/nrow(ny_noaa)`)
+* tmin: `r sum(is.na(ny_noaa$tmin))` (`r sum(is.na(ny_noaa$tmin))/nrow(ny_noaa)`)
+
+Almost 50% of entries have a missing tmax and tmin value, and the other variables have varying numbers of missing data. I would be careful in interpreting temperature data.
+
+Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+
+### Data cleaning
+
+```{r}
+ny_noaa = ny_noaa %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(month = lubridate::month(as.numeric(month), label = TRUE, abbr = FALSE),
+         tmax = as.numeric(tmax),
+         tmax = tmax/10,
+         tmin = as.numeric(tmin),
+         tmin = tmin/10,
+         prcp = prcp/10) 
+ny_noaa
+```
+
+#### Most commonly observed calues for snowfall
+```{r}
+ny_noaa %>% 
+  count(snow) %>% 
+  arrange(desc(n))
+```
+
+The most commonly observed values for snowfall are 0 mm , followed by missing (NA) values. Then the most common non-zero and non-missing snowfall values are 25 mm, 13 mm and 51 mm.
 
 
